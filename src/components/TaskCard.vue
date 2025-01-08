@@ -1,31 +1,38 @@
 <template>
-    <div class="card shadow p-3 mb-4">
-        <h3 class="text-center">{{ title }}Do something!</h3>
-        <p>
-            <strong>State:</strong>
-            {{ state }}Open
-        </p>
-        <p><strong>Description:</strong></p>
-        <div class="description-container">
+    <div class="card shadow-lg p-4 mb-4 bg-white rounded">
+        <div class="card-header text-center text-dark bg-warning">
+            <h3 class="card-title">{{ title }}Do something</h3>
+        </div>
+        <div class="card-body">
+            <p class="mb-2">
+                <strong>State:</strong>
+                <span class="badge bg-success">{{ state }} Finished</span>
+            </p>
+            <p><strong>Description:</strong></p>
+            <div class="description-container">
+                <p>
+                    {{ content }} Lorem ipsum dolor sit amet consectetur
+                    adipisicing elit. Asperiores, dicta aliquam, quaerat nam
+                    autem exercitationem saepe laborum id officia, fuga illum
+                    aliquid expedita dolorem possimus itaque! Neque, ullam
+                    voluptates. Fuga dolore hic maxime accusantium eos
+                    laudantium expedita cum error quo tenetur quibusdam omnis
+                    obcaecati eaque quidem, vel rem repellendus maiores.
+                </p>
+            </div>
+            <p class="mt-3">
+                <strong>ID:</strong>
+                <span class="text-muted">
+                    {{ id }} bd3e82ce-6643-4851-8755-324c4da7c680
+                </span>
+            </p>
             <p>
-                {{ content }} Lorem ipsum, dolor sit amet consectetur
-                adipisicing elit. Blanditiis perferendis quibusdam inventore
-                impedit necessitatibus quam ipsam cum mollitia quaerat
-                perspiciatis, minus dolore molestias suscipit culpa odio modi
-                iusto dolor provident saepe repudiandae vero. Inventore porro
-                saepe, ea sit placeat nemo esse accusamus numquam possimus error
-                maxime eos fuga blanditiis eaque?
+                <strong>Created:</strong>
+                <span class="text-muted">{{ createdDate }} 21-05-2024</span>
             </p>
         </div>
-        <p>
-            <strong>ID:bd3e82ce-6643-4851-8755-324c4da7c680</strong>
-            {{ id }}
-        </p>
-        <p>
-            <strong>Created: 21-05-2024</strong>
-            {{ createdDate }}
-        </p>
-        <div class="d-flex justify-content-between mt-3">
+        <div
+            class="card-footer d-flex justify-content-between bg-light rounded-bottom">
             <button class="btn btn-primary">Update</button>
             <button class="btn btn-danger">Delete</button>
         </div>
@@ -62,17 +69,29 @@ export default {
 
 <style>
 .card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    max-width: 20em;
-    background-color: #fff;
+    max-width: 22rem;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    font-weight: bold;
 }
 
 .description-container {
-    max-height: 100px;
+    max-height: 10em;
     overflow-y: auto;
-    border: 1px solid #ccc;
-    padding: 5px;
-    border-radius: 4px;
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.card-footer button {
+    width: 48%;
+}
+
+.card-footer {
+    border-top: 1px solid #e0e0e0;
 }
 </style>
