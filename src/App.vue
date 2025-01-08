@@ -4,7 +4,7 @@
             <!-- Vertikální menu -->
             <nav
                 class="col-3 col-md-2 mybg text-white d-flex flex-column align-items-center p-3">
-                <h2 class="fw-bold mb-4">ACTIONLIST</h2>
+                <h2 class="mb-4">ACTIONLIST</h2>
                 <ul class="nav flex-column w-100">
                     <li class="nav-item mb-2">
                         <router-link
@@ -31,6 +31,7 @@
                         </router-link>
                     </li>
                 </ul>
+                <p class="mt-auto">&copy; Libor Šaja 2025</p>
             </nav>
 
             <!-- Obsah -->
@@ -48,8 +49,12 @@ export default {
 </script>
 
 <style>
+h2 {
+    font-size: 2.8vw;
+}
+
 .mybg {
-    background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+    background: linear-gradient(135deg, #501176, #a649c0);
 }
 
 .nav {
@@ -64,7 +69,7 @@ export default {
     display: block;
     text-decoration: none;
     color: white;
-    font-size: 18px;
+    font-size: 1vw;
     padding: 10px 15px;
     border-radius: 5px;
     transition: all 0.3s ease;
@@ -77,7 +82,7 @@ export default {
 .active-link {
     background: #440868;
     color: white;
-    font-size: 20px;
+    font-size: 1.5vw;
     border-radius: 5px;
     padding: 10px 15px;
     text-decoration: none;
