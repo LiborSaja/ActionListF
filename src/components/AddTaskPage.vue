@@ -1,33 +1,39 @@
 <template>
-    <div class="container">
-        <h1>Add New Task</h1>
-        <form @submit.prevent="submitForm">
+    <div class="container my-5">
+        <h1 class="text-center text-dark mb-4">Add New Task</h1>
+        <form @submit.prevent="submitForm" class="p-3">
             <!-- Title -->
-            <div class="mb-3">
-                <label for="title" class="form-label">Title</label>
+            <div class="mb-4">
+                <label for="title" class="form-label fw-bold">Task Title</label>
                 <input
                     type="text"
                     id="title"
-                    class="form-control"
+                    class="form-control border-primary"
+                    placeholder="Enter task title"
                     v-model="task.title"
                     required />
             </div>
+
             <!-- Content -->
-            <div class="mb-3">
-                <label for="content" class="form-label">Content</label>
+            <div class="mb-4">
+                <label for="content" class="form-label fw-bold">Details</label>
                 <textarea
                     id="content"
-                    class="form-control"
+                    class="form-control border-primary"
+                    placeholder="Enter task details"
                     v-model="task.content"
-                    rows="3"
+                    rows="4"
                     required></textarea>
             </div>
+
             <!-- State -->
-            <div class="mb-3">
-                <label for="state" class="form-label">State</label>
+            <div class="mb-4">
+                <label for="state" class="form-label fw-bold">
+                    Task Status
+                </label>
                 <select
                     id="state"
-                    class="form-select"
+                    class="form-select border-primary"
                     v-model="task.state"
                     required>
                     <option value="open">Open</option>
@@ -35,8 +41,19 @@
                     <option value="finished">Finished</option>
                 </select>
             </div>
-            <!-- Submit -->
-            <button type="submit" class="btn btn-primary">Add Task</button>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary px-4"
+                    @click="goBack">
+                    Back
+                </button>
+                <button type="submit" class="btn btn-success px-4">
+                    Add Task
+                </button>
+            </div>
         </form>
     </div>
 </template>
@@ -70,12 +87,27 @@ const submitForm = async () => {
         alert("Failed to add task. Check console for details.");
     }
 };
+
+// Funkce pro návrat na předchozí stránku
+const goBack = () => {
+    router.back(); // Vrátí uživatele na předchozí stránku
+};
 </script>
 
 <style>
 .container {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+}
+
+/* Zvýraznění hran polí */
+.border-primary {
+    border: 2px solid #440868 !important;
+    border-radius: 5px;
+}
+
+.border-primary:focus {
+    box-shadow: 0 0 5px rgba(68, 8, 104, 0.5);
+    outline: none;
 }
 </style>
