@@ -7,8 +7,10 @@
         <div class="row align-items-center">
             <!-- Tlačítko -->
             <div class="col-auto">
-                <button class="btn btn-success" @click="openAddModal">
-                    Add new task +
+                <button
+                    class="btn btn-success"
+                    @click="$router.push('/add-task')">
+                    Add New Task
                 </button>
             </div>
 
@@ -76,12 +78,6 @@
             message="Are you sure you want to delete this task?"
             @close="closeModal"
             @confirm="deleteTask" />
-
-        <!-- <AddUpdateModal
-            :isOpen="isAddUpdateModalOpen"
-            :initialTask="currentTask"
-            @close="isAddUpdateModalOpen = false"
-            @save="saveTask" /> -->
     </div>
 </template>
 
@@ -90,7 +86,6 @@ import { ref } from "vue";
 import TaskCard from "./TaskCard.vue";
 import TodoService from "../services/todoService.js";
 import ConfirmModal from "../components/ConfirmModal.vue";
-import AddUpdateModal from "./AddUpdateModal.vue";
 
 // Reaktivní proměnné
 const tasks = ref([]);
@@ -100,9 +95,14 @@ const isModalOpen = ref(false); // Stav modálního okna
 const taskIdToDelete = ref(null); // ID úkolu k odstranění
 const errorMessage = ref(""); // Chybová zpráva
 const isAddUpdateModalOpen = ref(false);
-const modalTitle = ref("Add/Update Task"); // Výchozí hodnota pro titulek
-const confirmButtonText = ref("Save"); // Výchozí text pro tlačítko
-const currentTask = ref({ title: "", content: "", state: "open" });
+const currentTask = ref({
+    id: null, // ID generované backendem
+    title: "", // Výchozí prázdný název
+    state: "open", // Výchozí stav
+    content: "", // Výchozí prázdný obsah
+    created: null, // Datum bude vypočítáno
+});
+
 const isEditing = ref(false); // True = update, False = add
 
 // Načtení dat z backendu
@@ -119,6 +119,9 @@ const fetchTasks = async () => {
             response = await TodoService.getFiltered(filterState.value);
         }
 
+        // Debugovací výpis odpovědi
+        console.log("Response from backend:", response);
+
         // Zkontroluj odpověď
         if (response && response.length > 0) {
             tasks.value = response; // Pokud existují úkoly, ulož je
@@ -127,7 +130,8 @@ const fetchTasks = async () => {
             errorMessage.value = "No tasks found for the selected filter."; // Nastav zprávu
         }
     } catch (error) {
-        // Zpracování chybové odpovědi z backendu
+        console.error("Error fetching tasks:", error);
+
         if (
             error.response &&
             error.response.data &&
@@ -143,26 +147,10 @@ const fetchTasks = async () => {
     }
 };
 
-const openAddModal = () => {
-    currentTask.value = { title: "", content: "", state: "open" }; // Výchozí hodnoty nového úkolu
-    isAddUpdateModalOpen.value = true; // Otevře modální okno
-};
-
 const openUpdateModal = (task) => {
-    currentTask.value = { ...task };
-    isEditing.value = true; // Úprava
+    currentTask.value = { ...task }; // Zkopírování existujícího úkolu
+    isEditing.value = true;
     isAddUpdateModalOpen.value = true;
-};
-
-// Uložení nového nebo upraveného úkolu
-const saveTask = async (task) => {
-    try {
-        await TodoService.create(task); // Odeslání na endpoint
-        await fetchTasks(); // Aktualizace seznamu úkolů
-        isAddUpdateModalOpen.value = false; // Zavření modálního okna
-    } catch (error) {
-        console.error("Error creating task:", error);
-    }
 };
 
 // Vyčištění vyhledávání
