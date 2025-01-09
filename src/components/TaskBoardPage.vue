@@ -21,21 +21,25 @@
                 </label>
             </div>
             <div class="col">
-                <div class="position-relative">
+                <div class="input-group">
                     <input
                         type="text"
                         id="find-task"
                         class="form-control"
                         placeholder="Enter task ID"
                         v-model="searchQuery" />
+                    <button class="btn btn-primary" @click="findTaskById">
+                        Search
+                    </button>
                     <button
-                        class="cross"
+                        class="btn btn-outline-secondary"
                         v-if="searchQuery"
                         @click="clearSearch">
                         X
                     </button>
                 </div>
             </div>
+
             <!-- Filtrace -->
             <div class="col-auto ms-auto d-flex align-items-center">
                 <span class="me-2">Filtered by:</span>
@@ -55,12 +59,22 @@
         <hr />
         <!-- Generování karet -->
         <div class="row">
-            <div v-if="errorMessage" class="alert alert-warning text-center">
-                {{ errorMessage }}
+            <div
+                v-if="errorMessage"
+                class="alert alert-warning d-flex justify-content-between align-items-center">
+                <span>{{ errorMessage }}</span>
+                <button
+                    class="btn btn-sm btn-secondary ms-3"
+                    @click="clearSearch">
+                    Reset
+                </button>
             </div>
         </div>
         <div class="card-cont row my-3">
-            <div class="col-md-4 mb-4" v-for="task in tasks" :key="task.id">
+            <div
+                v-for="task in displayTasks"
+                :key="task.id"
+                class="col-md-4 mb-4">
                 <TaskCard
                     :title="task.title"
                     :state="task.state"
@@ -82,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import TaskCard from "./TaskCard.vue";
 import TodoService from "../services/todoService.js";
 import ConfirmModal from "../components/ConfirmModal.vue";
@@ -95,6 +109,7 @@ const isModalOpen = ref(false); // Stav modálního okna
 const taskIdToDelete = ref(null); // ID úkolu k odstranění
 const errorMessage = ref(""); // Chybová zpráva
 const isAddUpdateModalOpen = ref(false);
+const loading = ref(false); // Stav načítání
 const currentTask = ref({
     id: null, // ID generované backendem
     title: "", // Výchozí prázdný název
@@ -144,6 +159,8 @@ const fetchTasks = async () => {
 
         // Vyčisti seznam úkolů
         tasks.value = [];
+    } finally {
+        loading.value = false;
     }
 };
 
@@ -153,9 +170,12 @@ const openUpdateModal = (task) => {
     isAddUpdateModalOpen.value = true;
 };
 
-// Vyčištění vyhledávání
+// Vyčištění vyhledávacího pole
 const clearSearch = () => {
-    searchQuery.value = "";
+    searchQuery.value = ""; // Vymazání vyhledávacího pole
+    errorMessage.value = ""; // Vymazání chybové zprávy
+    filterState.value = "all"; // Resetuje filtr na "all"
+    fetchTasks(); // Obnovení celého seznamu úkolů
 };
 
 // Formátování data pro zobrazení
@@ -193,6 +213,40 @@ const deleteTask = async () => {
         console.error("Error deleting task:", error);
     }
 };
+
+// Vyhledání úkolu podle ID
+const findTaskById = async () => {
+    if (!searchQuery.value) return; // Pokud není zadané ID, nedělej nic
+
+    loading.value = true;
+    errorMessage.value = ""; // Vymazání předchozí zprávy
+    try {
+        const task = await TodoService.getById(searchQuery.value);
+        tasks.value = [task]; // Nahradí celý seznam pouze nalezeným úkolem
+    } catch (error) {
+        console.error("Error finding task:", error);
+        if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error &&
+            error.response.data.error.message
+        ) {
+            // Nastavení zprávy z backendu
+            errorMessage.value = error.response.data.error.message;
+        } else {
+            // Obecná chyba
+            errorMessage.value = "An unexpected error occurred.";
+        }
+        tasks.value = []; // Vyčistí seznam při chybě
+    } finally {
+        loading.value = false;
+    }
+};
+
+// Výsledky k zobrazení
+const displayTasks = computed(() => {
+    return tasks.value; // Zobrazí všechny úkoly
+});
 
 // Načti data při načtení komponenty
 fetchTasks();
