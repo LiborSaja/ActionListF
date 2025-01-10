@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid">
         <div class="row">
-            <h1>Task Board</h1>
+            <h1 class="text-center">Task Board</h1>
             <hr />
         </div>
         <div class="row align-items-center">
@@ -70,7 +70,7 @@
                 </button>
             </div>
         </div>
-        <div class="card-cont row my-3">
+        <div class="card-cont row">
             <div
                 v-for="task in displayTasks"
                 :key="task.id"
@@ -82,7 +82,7 @@
                     :id="task.id"
                     :createdDate="formatDate(task.created)"
                     @delete-task="confirmDelete(task.id)"
-                    @edit-task="openUpdateModal(task)" />
+                    @update-task="updateTask" />
             </div>
         </div>
         <!-- Modální okno -->
@@ -108,17 +108,16 @@ const searchQuery = ref("");
 const isModalOpen = ref(false); // Stav modálního okna
 const taskIdToDelete = ref(null); // ID úkolu k odstranění
 const errorMessage = ref(""); // Chybová zpráva
-const isAddUpdateModalOpen = ref(false);
 const loading = ref(false); // Stav načítání
-const currentTask = ref({
-    id: null, // ID generované backendem
-    title: "", // Výchozí prázdný název
-    state: "open", // Výchozí stav
-    content: "", // Výchozí prázdný obsah
-    created: null, // Datum bude vypočítáno
-});
 
-const isEditing = ref(false); // True = update, False = add
+const stateMap = {
+    1: "Open",
+    2: "InProgress",
+    3: "Finished",
+    open: "Open",
+    inprogress: "InProgress",
+    finished: "Finished",
+};
 
 // Načtení dat z backendu
 const fetchTasks = async () => {
@@ -164,12 +163,6 @@ const fetchTasks = async () => {
     }
 };
 
-const openUpdateModal = (task) => {
-    currentTask.value = { ...task }; // Zkopírování existujícího úkolu
-    isEditing.value = true;
-    isAddUpdateModalOpen.value = true;
-};
-
 // Vyčištění vyhledávacího pole
 const clearSearch = () => {
     searchQuery.value = ""; // Vymazání vyhledávacího pole
@@ -181,12 +174,15 @@ const clearSearch = () => {
 // Formátování data pro zobrazení
 const formatDate = (isoDate) => {
     const date = new Date(isoDate);
-    const datePart = date.toLocaleDateString(); // Získá datum (např. "8.1.2025")
+    if (isNaN(date)) {
+        return "Invalid Date"; // Vrátí zprávu, pokud je datum neplatné
+    }
+    const datePart = date.toLocaleDateString(); // Např. "9.1.2025"
     const timePart = date.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
-    }); // Získá čas (např. "14:30")
-    return `${datePart} ${timePart}`; // Spojení data a času
+    }); // Např. "19:38"
+    return `${datePart} ${timePart}`;
 };
 
 // Potvrzení odstranění
@@ -208,6 +204,12 @@ const deleteTask = async () => {
         tasks.value = tasks.value.filter(
             (task) => task.id !== taskIdToDelete.value
         ); // Aktualizace seznamu
+
+        // Pokud po odstranění není žádný úkol, nastavíme chybovou zprávu
+        if (tasks.value.length === 0) {
+            errorMessage.value = "No tasks found.";
+        }
+
         closeModal(); // Zavření modálního okna
     } catch (error) {
         console.error("Error deleting task:", error);
@@ -248,6 +250,36 @@ const displayTasks = computed(() => {
     return tasks.value; // Zobrazí všechny úkoly
 });
 
+const updateTask = async (updatedTask) => {
+    try {
+        const taskToUpdate = {
+            ...updatedTask,
+            state: updatedTask.state.toLowerCase(), // Převod state na text pro backend
+        };
+
+        const response = await TodoService.updateById(
+            taskToUpdate.id,
+            taskToUpdate
+        );
+
+        // Najdeme původní úkol, abychom zachovali hodnotu `created`
+        const index = tasks.value.findIndex((task) => task.id === response.id);
+        const originalTask = tasks.value[index];
+
+        const updatedTaskWithTextState = {
+            ...response,
+            state: stateMap[response.state], // Mapování state zpět na text
+            created: originalTask?.created || response.created, // Zachování původního created
+        };
+
+        if (index !== -1) {
+            tasks.value[index] = updatedTaskWithTextState; // Aktualizace seznamu úkolů
+        }
+    } catch (error) {
+        console.error("Chyba při aktualizaci úkolu:", error);
+    }
+};
+
 // Načti data při načtení komponenty
 fetchTasks();
 </script>
@@ -266,7 +298,7 @@ fetchTasks();
 }
 
 .card-cont {
-    height: 32rem;
+    height: 36em;
     overflow-y: auto;
 }
 </style>

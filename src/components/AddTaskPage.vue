@@ -100,14 +100,13 @@ const goBack = () => {
     margin: 0 auto;
 }
 
-/* Zvýraznění hran polí */
 .border-primary {
     border: 2px solid #440868 !important;
     border-radius: 5px;
-}
 
-.border-primary:focus {
-    box-shadow: 0 0 5px rgba(68, 8, 104, 0.5);
-    outline: none;
+    &:focus {
+        box-shadow: 0 0 5px rgba(68, 8, 104, 0.5);
+        outline: none;
+    }
 }
 </style>

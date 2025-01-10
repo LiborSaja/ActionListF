@@ -71,43 +71,43 @@ const confirmAction = () => {
     align-items: center;
     justify-content: center;
     z-index: 1050;
-}
 
-.modal-dialog-centered {
-    background: white;
-    border-radius: 8px;
-    max-width: 400px;
-    width: 100%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    animation: fadeIn 0.3s ease-in-out;
-}
+    .modal-dialog-centered {
+        background: white;
+        border-radius: 8px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        animation: fadeIn 0.3s ease-in-out;
 
-.modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.modal-body {
-    padding: 1.5rem;
-    font-size: 1rem;
-    color: #212529;
-}
+        .modal-body {
+            padding: 1.5rem;
+            font-size: 1rem;
+            color: #212529;
+        }
 
-.modal-footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-}
+        .modal-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
 
-.modal-footer button {
-    min-width: 100px;
+            button {
+                min-width: 100px;
+            }
+        }
+    }
 }
 
 @keyframes fadeIn {

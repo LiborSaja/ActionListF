@@ -35,7 +35,7 @@
             </nav>
 
             <!-- Obsah -->
-            <main class="col-9 col-md-10 bg-light p-4">
+            <main class="container-fluid col-9 col-md-10 bg-light">
                 <router-view></router-view>
             </main>
         </div>
@@ -59,36 +59,36 @@ h2 {
 
 .nav {
     width: 100%;
-}
 
-.nav-item {
-    margin-bottom: 10px;
-}
+    .nav-item {
+        margin-bottom: 10px;
 
-.nav-link {
-    display: block;
-    text-decoration: none;
-    color: white;
-    font-size: 1vw;
-    padding: 10px 15px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-}
+        .nav-link {
+            display: block;
+            text-decoration: none;
+            color: white;
+            font-size: 1vw;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
 
-.nav-link:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+        }
+    }
 
-.active-link {
-    background: #440868;
-    color: white;
-    font-size: 1.5vw;
-    border-radius: 5px;
-    padding: 10px 15px;
-    text-decoration: none;
-}
+    .active-link {
+        background: #440868;
+        color: white;
+        font-size: 1.5vw;
+        border-radius: 5px;
+        padding: 10px 15px;
+        text-decoration: none;
 
-.active-link:hover {
-    color: #4a148c;
+        &:hover {
+            color: #4a148c;
+        }
+    }
 }
 </style>
