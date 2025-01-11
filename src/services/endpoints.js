@@ -1,16 +1,16 @@
 const API_ENDPOINTS = {
-    // Základní endpoint pro Todo
+    // základní endpoint pro tabulku v DB
     TODOS: "/Todo",
 
-    // Filtrování
+    // filtrování
     FILTER_BY_STATE: (state) => `/Todo?state=${state}`,
 
-    // Operace s ID
+    // operace s ID
     GET_BY_ID: (id) => `/Todo/${id}`,
     DELETE_BY_ID: (id) => `/Todo/${id}`,
     UPDATE_BY_ID: (id) => `/Todo/${id}`,
 
-    // Vytvoření nového Todo
+    // vytvoření nového objektu
     CREATE: "/Todo",
 };
 

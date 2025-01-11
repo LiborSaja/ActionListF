@@ -1,26 +1,21 @@
 <template>
     <div class="container-fluid">
         <div class="row">
-            <h1 class="text-center">Task Board</h1>
+            <h1 class="text-center mt-2">Task Board</h1>
             <hr />
         </div>
-        <div class="row align-items-center">
-            <!-- Tlačítko -->
-            <div class="col-auto">
+        <div class="row g-3 align-items-center">
+            <!-- tlačítko add -->
+            <div class="col-4 col-md-2">
                 <button
-                    class="btn btn-success"
+                    class="btn btn-success w-100"
                     @click="$router.push('/add-task')">
-                    Add New Task
+                    Add New Task +
                 </button>
             </div>
 
-            <!-- Vyhledávání -->
-            <div class="col-auto position-relative">
-                <label for="find-task" class="form-label mb-0 me-2">
-                    Find task by ID:
-                </label>
-            </div>
-            <div class="col">
+            <!-- vyhledávání -->
+            <div class="col-8 col-md-6">
                 <div class="input-group">
                     <input
                         type="text"
@@ -40,24 +35,28 @@
                 </div>
             </div>
 
-            <!-- Filtrace -->
-            <div class="col-auto ms-auto d-flex align-items-center">
-                <span class="me-2">Filtered by:</span>
-                <select
-                    name="status"
-                    id="status"
-                    class="form-select w-auto"
-                    v-model="filterState"
-                    @change="fetchTasks">
-                    <option value="all" selected>All</option>
-                    <option value="open">Open</option>
-                    <option value="inprogress">In Progress</option>
-                    <option value="finished">Finished</option>
-                </select>
+            <!-- filtrace -->
+            <div class="col-12 col-md-4">
+                <div
+                    class="d-flex flex-column flex-md-row align-items-md-center">
+                    <span class="me-md-2 mb-2 mb-md-0">Filtered by:</span>
+                    <select
+                        name="status"
+                        id="status"
+                        class="form-select w-100"
+                        v-model="filterState"
+                        @change="fetchTasks">
+                        <option value="all" selected>All</option>
+                        <option value="open">Open</option>
+                        <option value="inprogress">In Progress</option>
+                        <option value="finished">Finished</option>
+                    </select>
+                </div>
             </div>
         </div>
+
         <hr />
-        <!-- Generování karet -->
+        <!-- generování objektů -->
         <div class="row">
             <div
                 v-if="errorMessage"
@@ -74,7 +73,7 @@
             <div
                 v-for="task in displayTasks"
                 :key="task.id"
-                class="col-md-4 mb-4">
+                class="col-12 col-md-6 col-lg-4 mb-4">
                 <TaskCard
                     :title="task.title"
                     :state="task.state"
@@ -85,7 +84,8 @@
                     @update-task="updateTask" />
             </div>
         </div>
-        <!-- Modální okno -->
+
+        <!-- modál konfirmační okno -->
         <ConfirmModal
             :isOpen="isModalOpen"
             title="Confirm Delete"
@@ -101,7 +101,7 @@ import TaskCard from "./TaskCard.vue";
 import TodoService from "../services/todoService.js";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
-// Reaktivní proměnné
+// reaktivní proměnné
 const tasks = ref([]);
 const filterState = ref("all");
 const searchQuery = ref("");

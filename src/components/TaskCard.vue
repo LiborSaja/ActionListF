@@ -71,10 +71,10 @@
             </template>
             <!-- Editace -->
             <template v-else>
-                <button class="btn btn-success" @click="saveEdit">Save</button>
                 <button class="btn btn-secondary" @click="cancelEdit">
                     Cancel
                 </button>
+                <button class="btn btn-success" @click="saveEdit">Save</button>
             </template>
         </div>
     </div>
@@ -82,7 +82,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import { defineProps, defineEmits } from "vue";
+import { defineProps } from "vue";
 
 // Definování props
 const props = defineProps({
@@ -172,8 +172,9 @@ const stateBadgeClass = computed(() => {
 
 <style>
 .card {
+    width: 100%;
     max-width: 22rem;
-    height: 30rem;
+    height: 33rem;
     border: 1px solid black;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
@@ -182,7 +183,7 @@ const stateBadgeClass = computed(() => {
     }
 
     .description-container {
-        height: 7rem;
+        height: 9rem;
         overflow-y: auto;
         background-color: #f8f9fa;
         border: 1px solid #e0e0e0;

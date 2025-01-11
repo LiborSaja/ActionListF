@@ -1,9 +1,9 @@
 <template>
     <div class="container-fluid vh-100">
         <div class="row h-100">
-            <!-- Vertikální menu -->
+            <!-- navigační menu -->
             <nav
-                class="col-3 col-md-2 mybg text-white d-flex flex-column align-items-center p-3">
+                class="d-none d-md-flex col-md-2 mybg text-white flex-column align-items-center p-3">
                 <h2 class="mb-4">ACTIONLIST</h2>
                 <ul class="nav flex-column w-100">
                     <li class="nav-item mb-2">
@@ -34,17 +34,70 @@
                 <p class="mt-auto">&copy; Libor Šaja 2025</p>
             </nav>
 
-            <!-- Obsah -->
-            <main class="container-fluid col-9 col-md-10 bg-light">
+            <!-- menu pro mobilní zařízení -->
+            <nav class="d-md-none navbar navbar-expand-lg mybg text-white">
+                <div class="container-fluid">
+                    <a class="navbar-brand text-white" href="#">Menu</a>
+                    <button
+                        class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav"
+                        aria-controls="navbarNav"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <router-link
+                                    to="/about"
+                                    class="nav-link text-white"
+                                    active-class="active-link"
+                                    @click="closeMenu">
+                                    About
+                                </router-link>
+                            </li>
+                            <li class="nav-item">
+                                <router-link
+                                    to="/how-to-use"
+                                    class="nav-link text-white"
+                                    active-class="active-link"
+                                    @click="closeMenu">
+                                    How to use
+                                </router-link>
+                            </li>
+                            <li class="nav-item">
+                                <router-link
+                                    to="/task-board"
+                                    class="nav-link text-white"
+                                    active-class="active-link"
+                                    @click="closeMenu">
+                                    Task board
+                                </router-link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- obsah -->
+            <main class="container-fluid col-12 col-md-10 bg-light">
                 <router-view></router-view>
             </main>
         </div>
     </div>
 </template>
 
-<script>
-export default {
-    name: "App",
+<script setup>
+// metoda pro automatické zavření hamburger menu
+const closeMenu = () => {
+    const navbarNav = document.getElementById("navbarNav");
+    if (navbarNav && navbarNav.classList.contains("show")) {
+        const bootstrapCollapse = new bootstrap.Collapse(navbarNav);
+        bootstrapCollapse.hide();
+    }
 };
 </script>
 

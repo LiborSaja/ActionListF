@@ -4,6 +4,7 @@ import HowToUsePage from "../components/HowToUsePage.vue";
 import TaskBoardPage from "../components/TaskBoardPage.vue";
 import AddTaskPage from "../components/AddTaskPage.vue";
 
+// vrací instanci routeru s definovanými trasami a historií
 const routes = [
     { path: "/", redirect: "/about" },
     { path: "/about", component: AboutPage },
