@@ -2,7 +2,7 @@
     <div class="container my-5">
         <h1 class="text-center text-dark mb-4">Add New Task</h1>
         <form @submit.prevent="submitForm" class="p-3">
-            <!-- Title -->
+            <!-- input pro vlastnost title -->
             <div class="mb-4">
                 <label for="title" class="form-label fw-bold">Task Title</label>
                 <input
@@ -14,7 +14,7 @@
                     required />
             </div>
 
-            <!-- Content -->
+            <!-- input pro vlastnost content -->
             <div class="mb-4">
                 <label for="content" class="form-label fw-bold">Details</label>
                 <textarea
@@ -26,7 +26,7 @@
                     required></textarea>
             </div>
 
-            <!-- State -->
+            <!-- rozevírací seznam pro vlastnost state -->
             <div class="mb-4">
                 <label for="state" class="form-label fw-bold">
                     Task Status
@@ -42,7 +42,7 @@
                 </select>
             </div>
 
-            <!-- Buttons -->
+            <!-- tlačítka pro přidání objektu, nebo návrat zpět -->
             <div class="d-flex justify-content-between mt-4">
                 <button
                     type="button"
@@ -60,27 +60,21 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router"; // Použití Vue Routeru
+import { useRouter } from "vue-router"; 
 import TodoService from "../services/todoService.js";
 
-// Reaktivní proměnná pro nový úkol
+const router = useRouter();
 const task = ref({
     title: "",
     content: "",
     state: "open",
 });
 
-// Použití Vue Routeru pro navigaci
-const router = useRouter();
-
-// Metoda pro odeslání úkolu
+// metoda pro přidání nového objektu do DB
 const submitForm = async () => {
     try {
-        console.log("Submitting task:", task.value);
-        await TodoService.create(task.value); // Odeslání na backend
+        await TodoService.create(task.value);
         alert("Task added successfully!");
-
-        // Přesměrování na stránku Task Board
         router.push("/task-board");
     } catch (error) {
         console.error("Error adding task:", error);
@@ -88,9 +82,9 @@ const submitForm = async () => {
     }
 };
 
-// Funkce pro návrat na předchozí stránku
+// metoda pro návrat na předchozí stránku
 const goBack = () => {
-    router.back(); // Vrátí uživatele na předchozí stránku
+    router.back(); 
 };
 </script>
 

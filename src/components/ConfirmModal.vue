@@ -33,27 +33,27 @@
 </template>
 
 <script setup>
-// Props
+const emit = defineEmits(["close", "confirm"]);
+
+// props
 defineProps({
-    isOpen: Boolean, // Stav modálního okna
+    isOpen: Boolean,
     title: {
         type: String,
-        default: "Confirm Action", // Výchozí titulek
+        default: "Confirm Action",
     },
     message: {
         type: String,
-        default: "Are you sure you want to perform this action?", // Výchozí zpráva
+        default: "Are you sure you want to perform this action?",
     },
 });
 
-// Emits
-const emit = defineEmits(["close", "confirm"]);
-
-// Metody
+// metoda zavření okna
 const closeModal = () => {
     emit("close");
 };
 
+// metoda potvrzení akce
 const confirmAction = () => {
     emit("confirm");
 };

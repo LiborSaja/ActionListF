@@ -3,7 +3,7 @@
         <div
             class="card-header text-center text-dark"
             :class="stateHeaderClass">
-            <!-- Zobrazení nebo editace titulu -->
+            <!-- zobrazení nebo editace názvu -->
             <template v-if="!isEditing">
                 <h3 class="card-title">{{ title }}</h3>
             </template>
@@ -16,7 +16,7 @@
             </template>
         </div>
         <div class="card-body">
-            <!-- Stav -->
+            <!-- zobrazení nebo editace stavu -->
             <p class="mb-2">
                 <strong>State:&nbsp;</strong>
                 <template v-if="!isEditing">
@@ -32,7 +32,7 @@
                     </select>
                 </template>
             </p>
-            <!-- Popis -->
+            <!-- zobrazení nebo editace popisu -->
             <div class="description-container">
                 <p><strong>Description:</strong></p>
                 <template v-if="!isEditing">
@@ -45,10 +45,12 @@
                         rows="3"></textarea>
                 </template>
             </div>
+            <!-- id objektu -->
             <p class="mt-3">
                 <strong>ID:&nbsp;</strong>
                 <span class="text-muted">{{ id }}</span>
             </p>
+            <!-- získání data a času vytvoření objektu -->
             <p>
                 <strong>Created:&nbsp;</strong>
                 <span class="text-muted">
@@ -58,7 +60,7 @@
         </div>
         <div
             class="card-footer d-flex justify-content-between bg-light rounded-bottom">
-            <!-- Zobrazení -->
+            <!-- tlačítka při zobrazeném objektu -->
             <template v-if="!isEditing">
                 <button class="btn btn-outline-primary" @click="startEdit">
                     Update
@@ -69,7 +71,7 @@
                     Delete
                 </button>
             </template>
-            <!-- Editace -->
+            <!-- tlačítka při editovaném objektu -->
             <template v-else>
                 <button class="btn btn-secondary" @click="cancelEdit">
                     Cancel
@@ -84,7 +86,12 @@
 import { ref, computed } from "vue";
 import { defineProps } from "vue";
 
-// Definování props
+const titleInput = ref(null);
+const isEditing = ref(false);
+const editedTask = ref({});
+const emit = defineEmits(["delete-task", "update-task"]);
+
+// definování props - vlastnosti pocházející od nadřazené komponenty
 const props = defineProps({
     title: {
         type: String,
@@ -108,47 +115,43 @@ const props = defineProps({
     },
 });
 
-// Emits
-const emit = defineEmits(["delete-task", "update-task"]);
-const titleInput = ref(null);
-// Reaktivní stav
-const isEditing = ref(false);
-const editedTask = ref({});
-
-// Funkce pro přepínání režimů
+// metoda pro přepínání režimů - normal/delete
 const startEdit = () => {
     isEditing.value = true;
     editedTask.value = {
         title: props.title,
-        state: props.state, // Textová reprezentace (např. "Open")
+        state: props.state,
         content: props.content,
         id: props.id,
     };
-    // Po krátké prodlevě zaostřete na input
+    // kurzor do inputu
     setTimeout(() => {
         titleInput.value?.focus();
     }, 0);
 };
 
+// metoda pro přerušení editace
 const cancelEdit = () => {
     isEditing.value = false;
     editedTask.value = {};
 };
 
+// metoda pro uložení editovaného objektu
 const saveEdit = () => {
     emit("update-task", {
         ...editedTask.value,
-        state: editedTask.value.state, // Textová reprezentace
+        state: editedTask.value.state,
     });
-    isEditing.value = false; // Přepneme zpět na režim zobrazení
+    isEditing.value = false;
 };
 
+// switch pro změnu barvy pozadí hodnoty názvu objektu dle zvolého stavu
 const stateHeaderClass = computed(() => {
     switch (props.state.toLowerCase()) {
         case "open":
             return "text-white bg-danger";
         case "inprogress":
-            return "text-dark bg-warning";
+            return "text-white bg-warning";
         case "finished":
             return "text-white bg-success";
         default:
@@ -156,6 +159,7 @@ const stateHeaderClass = computed(() => {
     }
 });
 
+// switch pro změnu barvy pozadí hodnoty stavu dle zvolého stavu
 const stateBadgeClass = computed(() => {
     switch (props.state.toLowerCase()) {
         case "open":

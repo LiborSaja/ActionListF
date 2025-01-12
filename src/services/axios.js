@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// instance axios, nastavuje url backendu, čas čekání a hlavičky - typ obsahu, který bude poslán na server (lokální)
+// instance axios, nastavuje url backendu, čas čekání a hlavičky - typ obsahu, který bude poslán na server
 const axiosInstance = axios.create({
     baseURL: "https://localhost:7021/api",
     timeout: 10000,

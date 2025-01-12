@@ -105,11 +105,10 @@ import ConfirmModal from "../components/ConfirmModal.vue";
 const tasks = ref([]);
 const filterState = ref("all");
 const searchQuery = ref("");
-const isModalOpen = ref(false); // Stav modálního okna
-const taskIdToDelete = ref(null); // ID úkolu k odstranění
-const errorMessage = ref(""); // Chybová zpráva
-const loading = ref(false); // Stav načítání
-
+const isModalOpen = ref(false);
+const taskIdToDelete = ref(null);
+const errorMessage = ref("");
+const loading = ref(false);
 const stateMap = {
     1: "Open",
     2: "InProgress",
@@ -119,142 +118,105 @@ const stateMap = {
     finished: "Finished",
 };
 
-// Načtení dat z backendu
+// asynchronní načítání objektů na základě aktuálního filtru
 const fetchTasks = async () => {
     try {
-        let response;
-
-        // Vymazání chybové zprávy při každém volání
         errorMessage.value = "";
-
-        if (filterState.value === "all") {
-            response = await TodoService.getAll();
-        } else {
-            response = await TodoService.getFiltered(filterState.value);
-        }
-
-        // Debugovací výpis odpovědi
-        console.log("Response from backend:", response);
-
-        // Zkontroluj odpověď
-        if (response && response.length > 0) {
-            tasks.value = response; // Pokud existují úkoly, ulož je
-        } else {
-            tasks.value = []; // Vyčisti seznam úkolů
-            errorMessage.value = "No tasks found for the selected filter."; // Nastav zprávu
-        }
+        const response =
+            filterState.value === "all"
+                ? await TodoService.getAll()
+                : await TodoService.getFiltered(filterState.value);
+        tasks.value = response;
     } catch (error) {
-        console.error("Error fetching tasks:", error);
-
-        if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error
-        ) {
-            errorMessage.value = error.response.data.error.message; // Nastav zprávu z backendu
-        } else {
-            errorMessage.value = "An unexpected error occurred.";
-        }
-
-        // Vyčisti seznam úkolů
+        errorMessage.value = handleAxiosError(error);
         tasks.value = [];
     } finally {
         loading.value = false;
     }
 };
 
-// Vyčištění vyhledávacího pole
-const clearSearch = () => {
-    searchQuery.value = ""; // Vymazání vyhledávacího pole
-    errorMessage.value = ""; // Vymazání chybové zprávy
-    filterState.value = "all"; // Resetuje filtr na "all"
-    fetchTasks(); // Obnovení celého seznamu úkolů
+// zpracování chyb přicházejících z backendu
+const handleAxiosError = (error) => {
+    if (error.response?.data?.error) {
+        return `${error.response.data.error.code}: ${error.response.data.error.message}`;
+    }
+    return error.message || "An unexpected error occurred.";
 };
 
-// Formátování data pro zobrazení
+// vyčištění vyhledávacího pole
+const clearSearch = () => {
+    searchQuery.value = "";
+    errorMessage.value = "";
+    filterState.value = "all";
+    fetchTasks();
+};
+
+// formát data na ISO
 const formatDate = (isoDate) => {
     const date = new Date(isoDate);
-    if (isNaN(date)) {
-        return "Invalid Date"; // Vrátí zprávu, pokud je datum neplatné
-    }
-    const datePart = date.toLocaleDateString(); // Např. "9.1.2025"
-    const timePart = date.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-    }); // Např. "19:38"
-    return `${datePart} ${timePart}`;
+    return isNaN(date)
+        ? "Invalid Date"
+        : `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+          })}`;
 };
 
-// Potvrzení odstranění
+// potvrzení odstranění objektu
 const confirmDelete = (id) => {
     taskIdToDelete.value = id;
     isModalOpen.value = true;
 };
 
-// Uzavření modálního okna
+// uzavření modálního okna
 const closeModal = () => {
     isModalOpen.value = false;
     taskIdToDelete.value = null;
 };
 
-// Odstranění úkolu
+// odstranění úkolu dle id
 const deleteTask = async () => {
     try {
-        await TodoService.deleteById(taskIdToDelete.value); // Zavolání metody pro odstranění
+        await TodoService.deleteById(taskIdToDelete.value);
         tasks.value = tasks.value.filter(
             (task) => task.id !== taskIdToDelete.value
-        ); // Aktualizace seznamu
-
-        // Pokud po odstranění není žádný úkol, nastavíme chybovou zprávu
-        if (tasks.value.length === 0) {
-            errorMessage.value = "No tasks found.";
-        }
-
-        closeModal(); // Zavření modálního okna
-    } catch (error) {
-        console.error("Error deleting task:", error);
+        );
+        errorMessage.value =
+            tasks.value.length === 0
+                ? "404002: No tasks found in the database."
+                : "";
+    } finally {
+        closeModal();
     }
 };
 
-// Vyhledání úkolu podle ID
+// vyhledání úkolu podle ID
 const findTaskById = async () => {
-    if (!searchQuery.value) return; // Pokud není zadané ID, nedělej nic
-
+    if (!searchQuery.value) return;
     loading.value = true;
-    errorMessage.value = ""; // Vymazání předchozí zprávy
+    errorMessage.value = "";
     try {
         const task = await TodoService.getById(searchQuery.value);
-        tasks.value = [task]; // Nahradí celý seznam pouze nalezeným úkolem
+        tasks.value = [task];
     } catch (error) {
-        console.error("Error finding task:", error);
-        if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error &&
-            error.response.data.error.message
-        ) {
-            // Nastavení zprávy z backendu
-            errorMessage.value = error.response.data.error.message;
-        } else {
-            // Obecná chyba
-            errorMessage.value = "An unexpected error occurred.";
-        }
-        tasks.value = []; // Vyčistí seznam při chybě
+        errorMessage.value = handleAxiosError(error);
+        tasks.value = [];
     } finally {
         loading.value = false;
     }
 };
 
-// Výsledky k zobrazení
+// vrací aktuální seznam úkolů, computed -> automatická aktualizace
 const displayTasks = computed(() => {
-    return tasks.value; // Zobrazí všechny úkoly
+    return tasks.value;
 });
 
+// úparava objektu dle id
 const updateTask = async (updatedTask) => {
     try {
         const taskToUpdate = {
             ...updatedTask,
-            state: updatedTask.state.toLowerCase(), // Převod state na text pro backend
+            state: updatedTask.state.toLowerCase(),
         };
 
         const response = await TodoService.updateById(
@@ -262,25 +224,24 @@ const updateTask = async (updatedTask) => {
             taskToUpdate
         );
 
-        // Najdeme původní úkol, abychom zachovali hodnotu `created`
         const index = tasks.value.findIndex((task) => task.id === response.id);
-        const originalTask = tasks.value[index];
-
-        const updatedTaskWithTextState = {
-            ...response,
-            state: stateMap[response.state], // Mapování state zpět na text
-            created: originalTask?.created || response.created, // Zachování původního created
-        };
-
         if (index !== -1) {
-            tasks.value[index] = updatedTaskWithTextState; // Aktualizace seznamu úkolů
+            tasks.value[index] = {
+                ...response,
+                state: stateMap[response.state],
+                created: tasks.value[index].created, // Zachování původního `created`
+            };
         }
     } catch (error) {
-        console.error("Chyba při aktualizaci úkolu:", error);
+        if (error.response?.data?.error?.details) {
+            errorMessage.value = error.response.data.error.details.join("\n");
+        } else {
+            errorMessage.value = handleAxiosError(error);
+        }
     }
 };
 
-// Načti data při načtení komponenty
+// načte objekty při načtení komponenty
 fetchTasks();
 </script>
 
